@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: Smoke tests (Windows / Python ${{ matrix.python }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Show Python info
+        run: |
+          python --version
+          python -c "import sys; print(sys.executable)"
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+        # test_regimes_stream.py auto-skips when NSIGHT_SKILL_REGIMES_SAMPLE
+        # is unset (sample is too large to commit). The other tests use the
+        # small TSV fixtures under tests/data/BASE/ and don't
+        # need an Nsight Graphics install.
+
+      - name: Verify CLI imports
+        run: python skills/nsight-graphics-analyzer/scripts/nsight.py --version
+
+      - name: Verify --help (proves argparse + lazy-imports are wired)
+        run: python skills/nsight-graphics-analyzer/scripts/nsight.py --help

@@ -1,0 +1,44 @@
+{
+  "name": "nsight-graphics-analyzer",
+  "version": "0.1.0",
+  "description": "Drive NVIDIA Nsight Graphics 2026.1+ from Codex or Claude Code. Capture GPU frames, auto-export TSV bundles, and answer drill-down queries with small JSON artifacts so an agent can analyze GPU performance without loading multi-hundred-MB raw traces. Windows + NVIDIA GPU only.",
+  "author": {
+    "name": "FrostyLeaves",
+    "email": "654065929@qq.com",
+    "url": "https://github.com/FrostyLeaves"
+  },
+  "homepage": "https://github.com/FrostyLeaves/nsight-graphics-analyzer",
+  "repository": "https://github.com/FrostyLeaves/nsight-graphics-analyzer",
+  "license": "MIT",
+  "keywords": [
+    "gpu",
+    "profiling",
+    "performance",
+    "nvidia",
+    "nsight",
+    "graphics",
+    "vulkan",
+    "directx",
+    "game-dev"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Nsight Graphics Analyzer",
+    "shortDescription": "Capture and analyze Nsight GPU traces with JSON drill-downs.",
+    "longDescription": "Wraps NVIDIA Nsight Graphics 2026.1+ command-line tools for Windows GPU performance work. The skill captures Graphics Capture or GPU Trace sessions, auto-exports large TSV bundles, summarizes them into small JSON artifacts, and provides drill-down commands for stages, actions, metrics, and common bottleneck diagnoses.",
+    "developerName": "FrostyLeaves",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/FrostyLeaves/nsight-graphics-analyzer",
+    "defaultPrompt": [
+      "Use $nsight-graphics-analyzer to profile a slow GPU frame.",
+      "Capture a GPU trace and explain the frame-time bottleneck.",
+      "Analyze this .ngfx-gputrace and show the hottest stages."
+    ],
+    "brandColor": "#76B900"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "nsight-graphics-analyzer",
+  "version": "0.1.0",
+  "description": "Drive NVIDIA Nsight Graphics 2026.1+ from the command line. Capture GPU frames, auto-export TSV bundles, and answer drill-down queries with small JSON artifacts so an agent can analyze GPU performance without loading multi-hundred-MB raw traces. Windows + NVIDIA GPU only.",
+  "author": {
+    "name": "FrostyLeaves",
+    "email": "654065929@qq.com"
+  },
+  "homepage": "https://github.com/FrostyLeaves/nsight-graphics-analyzer",
+  "repository": "FrostyLeaves/nsight-graphics-analyzer",
+  "license": "MIT",
+  "keywords": [
+    "gpu",
+    "profiling",
+    "performance",
+    "nvidia",
+    "nsight",
+    "graphics",
+    "vulkan",
+    "directx",
+    "game-dev"
+  ],
+  "skills": "./skills/"
+}

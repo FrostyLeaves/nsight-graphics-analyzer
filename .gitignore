@@ -1,0 +1,31 @@
+# Captured GPU traces and exports — never commit these
+captures/
+*.ngfx-gputrace
+*.ngfx-capture
+BASE/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local agent settings (do not ignore .claude-plugin/ or .codex-plugin/)
+.claude/
+.codex/
+
+# Build/dist (none expected, but defensive)
+build/
+dist/

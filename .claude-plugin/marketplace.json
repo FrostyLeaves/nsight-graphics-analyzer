@@ -1,0 +1,13 @@
+{
+  "name": "nsight-graphics-analyzer",
+  "owner": {
+    "name": "FrostyLeaves",
+    "email": "654065929@qq.com"
+  },
+  "plugins": [
+    {
+      "name": "nsight-graphics-analyzer",
+      "source": "."
+    }
+  ]
+}
