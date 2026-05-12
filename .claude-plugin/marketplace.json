@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "nsight-graphics-analyzer",
-      "source": "."
+      "source": "./"
     }
   ]
 }
