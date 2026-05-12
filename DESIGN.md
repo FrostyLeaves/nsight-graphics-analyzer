@@ -230,13 +230,13 @@ Test files:
   sample
 - `test_drill.py` — stages/actions/metric query results
 - `test_runner_dryrun.py` — argv mutex enforcement (no real ngfx)
-- `test_cli_smoke.py` — `python skills/nsight-graphics-analyzer/scripts/nsight.py gputrace ...` end to end
+- `test_cli_smoke.py` — `python plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight.py gputrace ...` end to end
 - `test_regimes_stream.py` — opt-in: tracemalloc bounds streaming peak
   under 50 MB
 
 The CLI smoke test materializes a `<tmpdir>/fake.ngfx-gputrace` (empty stub
 file) plus `<tmpdir>/BASE/<sample files>`, then runs the skill via
-`python skills/nsight-graphics-analyzer/scripts/nsight.py`. This exercises the entry-point bootstrap, the
+`python plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight.py`. This exercises the entry-point bootstrap, the
 argparse router, the gputrace handler, and the writer in one shot.
 
 ## Data sources (TSV bundle)
@@ -295,37 +295,37 @@ to the suspect count surfaced as a warning in `summary.analysis.warnings`.
 
 ## Module-by-module breakdown
 
-`skills/nsight-graphics-analyzer/scripts/nsight.py` — entry thunk. Adjusts `sys.path` so the package is
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight.py` — entry thunk. Adjusts `sys.path` so the package is
 importable without `pip install`, then dispatches to `nsight.cli.main()`.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/_version.py` — single source of truth for `__version__`,
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/_version.py` — single source of truth for `__version__`,
 `SCHEMA_VERSION`, `NGFX_TARGET`, `GENERATOR`. Don't sprinkle constants.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/_io.py` — argparse helpers (`int_range` factory plus the
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/_io.py` — argparse helpers (`int_range` factory plus the
 pre-bound `positive_int` / `nonnegative_int` validators, `env_kv`),
 `safe_compile` / `user_pattern_or_exit()` for regex-flag validation,
 `emit()` for JSON output, and exit-code constants (`EXIT_OK` = 0,
 `EXIT_USAGE` = 2, `EXIT_ENV` = 3, `EXIT_TOOL` = 4, `EXIT_TIMEOUT` = 5).
 No subpackage imports — must stay at the bottom of the dependency tree.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/cli.py` — argparse router. One `_add_*` helper per
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/cli.py` — argparse router. One `_add_*` helper per
 subcommand keeps the file scannable. Handlers are imported lazily via
 `importlib` so `--help` doesn't pay for runner/parse/analyze.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/env/locate.py` — Nsight install discovery (env override +
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/env/locate.py` — Nsight install discovery (env override +
 filesystem glob across all fixed drives + Windows uninstall registry,
 version-sorted). `find_install(strict=False)` lets `doctor` report a
 missing install without aborting.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/env/caps.py` — capabilities probe + on-disk cache. Cache
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/env/caps.py` — capabilities probe + on-disk cache. Cache
 key: (host_dir, per-binary mtime_ns, max-installed-version). Any change
 invalidates the cache, so installing a newer Nsight side-by-side or
 upgrading in place is detected automatically.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/env/procs.py` — `IsUserAnAdmin`, `taskkill /T /F /PID`,
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/env/procs.py` — `IsUserAnAdmin`, `taskkill /T /F /PID`,
 residual-ngfx detection via `tasklist`.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/runner/invoke.py` — subprocess wrapper. `run()` for
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/runner/invoke.py` — subprocess wrapper. `run()` for
 long-lived captures: **inherits** the wrapper's stdout/stderr so ngfx
 writes directly to whatever stdio the wrapper has, with no pipe between
 us. A PIPE+drain pattern was tried earlier and caused ngfx 2026.1.x to
@@ -339,11 +339,11 @@ function in `invoke.py`; it's implemented inline in
 `commands/gputrace_capture.py:run()` and keys on BASE/ bundle
 completeness, not on the trace file's existence or ngfx's exit code.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/runner/{gpu_trace,graphics,cpp,attach,replay}.py` — pure
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/runner/{gpu_trace,graphics,cpp,attach,replay}.py` — pure
 argv builders, one per ngfx activity / replay surface. Each file declares
 its own `ConfigError` subclass for mutex violations.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/runner/common.py` — shared argv helpers used by every
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/runner/common.py` — shared argv helpers used by every
 builder above: `format_env` (joins `KEY=VALUE` pairs into ngfx's single
 `--env "K=V; K2=V2;"` string), `format_args` (quotes program argv via
 `subprocess.list2cmdline`), `append_optional` / `append_flag`
@@ -351,23 +351,23 @@ builder above: `format_env` (joins `KEY=VALUE` pairs into ngfx's single
 `join_iter`. Lives next to the builders rather than in `_io` because
 it's ngfx-shaped, not generic argparse plumbing.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/parse/{tsv,repro_info,frame,gputrace_frame,d3dperf_events,regimes}.py`
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/parse/{tsv,repro_info,frame,gputrace_frame,d3dperf_events,regimes}.py`
 — one file per `.xls` family. `regimes.py` is the perf-critical one:
 header parse + `iter_rows` generator with column projection.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/analyze/{headlines,summary,stages,actions}.py` — the JSON
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/analyze/{headlines,summary,stages,actions}.py` — the JSON
 builders. `headlines.py` owns the metric-substring → key map; the other
 three each build one of the artifacts.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/queries/{stages,actions,metric}.py` — drill-down query
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/queries/{stages,actions,metric}.py` — drill-down query
 implementations. Mirror the structure of `analyze/` but accept regex
 filters and sort options.
 
-`skills/nsight-graphics-analyzer/scripts/nsight/artifacts/{layout,writer}.py` — session directory naming
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/artifacts/{layout,writer}.py` — session directory naming
 (`<parent>/<YYYY-MM-DD-HH-MM-SS-mmm>/<file>`), atomic JSON writes (tmp +
 `os.replace`).
 
-`skills/nsight-graphics-analyzer/scripts/nsight/commands/<subcmd>.py` — one file per subcommand. Each
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/commands/<subcmd>.py` — one file per subcommand. Each
 exports a `run(args: argparse.Namespace) -> int`. The handler is the only
 file that ties argparse output to the underlying library functions.
 
@@ -418,7 +418,7 @@ loss is acceptable for nearly all perf-analysis workflows.
 The wrapper still accepts `--multi-pass-metrics` for forensic /
 bug-report purposes but prints a `WARNING:` line and returns
 `bundle_complete=False`. Code comment + reasoning are archived in
-`skills/nsight-graphics-analyzer/scripts/nsight/commands/gputrace_capture.py` near
+`plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/commands/gputrace_capture.py` near
 `_warn_multi_pass_incompatible`.
 
 ### ngfx 2026.1.x cleanup-phase crash
@@ -469,7 +469,7 @@ this beyond the argparse mutex group declaration in `cli.py`.
 Names that work on Ada ("Throughput Metrics", "Async Compute Triage",
 "Top-Level Triage") don't all exist on Blackwell GB20x ("Top-Level
 Triage" is the only one shared). When in doubt run `capabilities` —
-the per-arch JSON config under `skills/nsight-graphics-analyzer/scripts/nsight/env/caps.py` has the
+the per-arch JSON config under `plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/scripts/nsight/env/caps.py` has the
 authoritative list.
 
 ### `--hes-enabled 1` on non-GB20x is silently ignored

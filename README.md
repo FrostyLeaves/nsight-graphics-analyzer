@@ -26,7 +26,7 @@ The Python code uses only the standard library. No `pip install` is required.
 Run the environment check first:
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py doctor
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py doctor
 ```
 
 If `ngfx_install` is `null`, install Nsight Graphics before trying to capture.
@@ -36,7 +36,7 @@ If `ngfx_install` is `null`, install Nsight Graphics before trying to capture.
 Capture a short GPU Trace and generate the three compact JSON artifacts:
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-capture `
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-capture `
   --exe "C:\Path\To\YourApp.exe" --wd "C:\Path\To" `
   --start-after-ms 5000 --max-duration-ms 1000 `
   --architecture Ada --metric-set-name "Throughput Metrics" `
@@ -55,7 +55,7 @@ The wrapper writes these files next to the trace:
 Start with `summary.json`, then drill into the slowest stage:
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-stages `
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-stages `
   "C:\Path\To\Captures\<session>\sample.ngfx-gputrace" `
   --parent "<stage-name-regex>" --top 10
 ```
@@ -65,20 +65,21 @@ agent context. Use the drill commands instead.
 
 ## Installation
 
-The installable skill lives at:
+The installable plugin package lives at:
 
 ```text
-skills/nsight-graphics-analyzer/
+plugins/nsight-graphics-analyzer/
 ```
 
-The repository root holds project docs, tests, CI, and plugin manifests.
+The bundled skill is under `plugins/nsight-graphics-analyzer/skills/`.
+The repository root holds project docs, tests, CI, and marketplace manifests.
 
 ### Codex
 
-Use the Codex plugin marketplace flow. This repository
-contains the plugin manifest at `.codex-plugin/plugin.json` and the marketplace
-metadata at `.agents/plugins/marketplace.json`, so Codex can discover the skill
-directly from GitHub:
+Use the Codex plugin marketplace flow. This repository contains the Codex
+plugin manifest at `plugins/nsight-graphics-analyzer/.codex-plugin/plugin.json`
+and the marketplace metadata at `.agents/plugins/marketplace.json`, so Codex can
+discover the skill directly from GitHub:
 
 ```powershell
 codex plugin marketplace add FrostyLeaves/nsight-graphics-analyzer
@@ -106,7 +107,7 @@ directory:
 git clone https://github.com/FrostyLeaves/nsight-graphics-analyzer
 New-Item -ItemType Directory -Force -Path $HOME\.codex\skills | Out-Null
 Copy-Item -Recurse -Force `
-  .\nsight-graphics-analyzer\skills\nsight-graphics-analyzer `
+  .\nsight-graphics-analyzer\plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer `
   $HOME\.codex\skills\
 ```
 
@@ -116,13 +117,14 @@ working tree:
 ```powershell
 New-Item -ItemType SymbolicLink `
   -Path $HOME\.codex\skills\nsight-graphics-analyzer `
-  -Target .\nsight-graphics-analyzer\skills\nsight-graphics-analyzer
+  -Target .\nsight-graphics-analyzer\plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer
 ```
 
 ### Claude Code
 
 This repository ships `.claude-plugin/marketplace.json`, so Claude Code can
-install it as a single-plugin marketplace. From the Claude Code prompt:
+install the package under `plugins/nsight-graphics-analyzer/` as a single-plugin
+marketplace. From the Claude Code prompt:
 
 ```text
 /plugin marketplace add FrostyLeaves/nsight-graphics-analyzer
@@ -154,7 +156,7 @@ You can use the wrapper directly without installing it as a skill:
 ```powershell
 git clone https://github.com/FrostyLeaves/nsight-graphics-analyzer
 cd nsight-graphics-analyzer
-python skills\nsight-graphics-analyzer\scripts\nsight.py --help
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py --help
 ```
 
 ## Common Tasks
@@ -180,7 +182,7 @@ python skills\nsight-graphics-analyzer\scripts\nsight.py --help
 Run full help for any command:
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py <command> --help
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py <command> --help
 ```
 
 ## How It Works
@@ -198,7 +200,7 @@ This project builds around that boundary:
 4. Stream the large REGIMES file only through focused queries.
 5. Write compact JSON for the agent or user to inspect.
 
-See [SKILL.md](skills/nsight-graphics-analyzer/SKILL.md) for the agent-facing
+See [SKILL.md](plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/SKILL.md) for the agent-facing
 workflow and [DESIGN.md](DESIGN.md) for architecture details and investigation
 notes.
 
@@ -218,18 +220,22 @@ Project layout:
 ```text
 .agents/plugins/marketplace.json
                          Codex plugin marketplace metadata
-.claude-plugin/           Claude Code plugin and marketplace manifests
-.codex-plugin/            Codex plugin manifest
+.claude-plugin/marketplace.json
+                         Claude Code marketplace metadata
+plugins/
+  nsight-graphics-analyzer/
+    .codex-plugin/        Codex plugin manifest
+    .claude-plugin/       Claude Code plugin manifest
+    skills/
+      nsight-graphics-analyzer/
+        SKILL.md          Agent-facing contract
+        agents/openai.yaml
+        scripts/
+          nsight.py       CLI entry point
+          nsight/         Python package
 DESIGN.md                 Maintainer notes
 README.md                 Project documentation
 tests/                    Unit tests and small TSV fixtures
-skills/
-  nsight-graphics-analyzer/
-    SKILL.md              Agent-facing contract
-    agents/openai.yaml    Codex skill UI metadata
-    scripts/
-      nsight.py           CLI entry point
-      nsight/             Python package
 ```
 
 Before opening a PR:

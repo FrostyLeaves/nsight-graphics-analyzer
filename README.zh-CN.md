@@ -26,7 +26,7 @@ TSV 转成适合阅读和下钻的小 JSON。
 先运行环境检查：
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py doctor
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py doctor
 ```
 
 如果输出里的 `ngfx_install` 是 `null`，先安装 Nsight Graphics。
@@ -36,7 +36,7 @@ python skills\nsight-graphics-analyzer\scripts\nsight.py doctor
 抓取一段短 GPU Trace，并生成三个小 JSON：
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-capture `
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-capture `
   --exe "C:\Path\To\YourApp.exe" --wd "C:\Path\To" `
   --start-after-ms 5000 --max-duration-ms 1000 `
   --architecture Ada --metric-set-name "Throughput Metrics" `
@@ -55,7 +55,7 @@ python skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-capture `
 先看 `summary.json`，再下钻最慢阶段：
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-stages `
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-stages `
   "C:\Path\To\Captures\<session>\sample.ngfx-gputrace" `
   --parent "<stage-name-regex>" --top 10
 ```
@@ -65,19 +65,21 @@ python skills\nsight-graphics-analyzer\scripts\nsight.py gputrace-stages `
 
 ## 安装
 
-真正可安装的 skill 位于：
+真正可安装的 plugin package 位于：
 
 ```text
-skills/nsight-graphics-analyzer/
+plugins/nsight-graphics-analyzer/
 ```
 
-仓库根目录只放项目文档、测试、CI 和 plugin manifest。
+内置 skill 位于 `plugins/nsight-graphics-analyzer/skills/`。
+仓库根目录只放项目文档、测试、CI 和 marketplace manifest。
 
 ### Codex
 
-建议走 Codex plugin marketplace 流程安装。仓库同时包含
-`.codex-plugin/plugin.json` 和 `.agents/plugins/marketplace.json`，Codex 可以
-直接从 GitHub 发现并安装这个 skill：
+建议走 Codex plugin marketplace 流程安装。仓库包含
+`plugins/nsight-graphics-analyzer/.codex-plugin/plugin.json` 和
+`.agents/plugins/marketplace.json`，Codex 可以直接从 GitHub 发现并安装这个
+skill：
 
 ```powershell
 codex plugin marketplace add FrostyLeaves/nsight-graphics-analyzer
@@ -104,7 +106,7 @@ codex
 git clone https://github.com/FrostyLeaves/nsight-graphics-analyzer
 New-Item -ItemType Directory -Force -Path $HOME\.codex\skills | Out-Null
 Copy-Item -Recurse -Force `
-  .\nsight-graphics-analyzer\skills\nsight-graphics-analyzer `
+  .\nsight-graphics-analyzer\plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer `
   $HOME\.codex\skills\
 ```
 
@@ -113,13 +115,14 @@ Copy-Item -Recurse -Force `
 ```powershell
 New-Item -ItemType SymbolicLink `
   -Path $HOME\.codex\skills\nsight-graphics-analyzer `
-  -Target .\nsight-graphics-analyzer\skills\nsight-graphics-analyzer
+  -Target .\nsight-graphics-analyzer\plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer
 ```
 
 ### Claude Code
 
-仓库已包含 `.claude-plugin/marketplace.json`，可以作为单 plugin 的 marketplace
-被 Claude Code 直接安装。在 Claude Code 提示行依次执行：
+仓库已包含 `.claude-plugin/marketplace.json`，Claude Code 可以把
+`plugins/nsight-graphics-analyzer/` 作为单 plugin package 直接安装。在 Claude
+Code 提示行依次执行：
 
 ```text
 /plugin marketplace add FrostyLeaves/nsight-graphics-analyzer
@@ -149,7 +152,7 @@ Claude Code 会自动加载这个 skill；也可以用
 ```powershell
 git clone https://github.com/FrostyLeaves/nsight-graphics-analyzer
 cd nsight-graphics-analyzer
-python skills\nsight-graphics-analyzer\scripts\nsight.py --help
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py --help
 ```
 
 ## 常见任务
@@ -175,7 +178,7 @@ python skills\nsight-graphics-analyzer\scripts\nsight.py --help
 查看某个命令的完整参数：
 
 ```powershell
-python skills\nsight-graphics-analyzer\scripts\nsight.py <command> --help
+python plugins\nsight-graphics-analyzer\skills\nsight-graphics-analyzer\scripts\nsight.py <command> --help
 ```
 
 ## 工作方式
@@ -193,7 +196,7 @@ Nsight Graphics 2026.1 不再提供旧工具依赖的未公开 `GPUTrace.pyd` �
 5. 写出适合智能体或用户阅读的小 JSON。
 
 面向智能体的使用契约见
-[SKILL.md](skills/nsight-graphics-analyzer/SKILL.md)，架构细节和排查记录见
+[SKILL.md](plugins/nsight-graphics-analyzer/skills/nsight-graphics-analyzer/SKILL.md)，架构细节和排查记录见
 [DESIGN.md](DESIGN.md)。
 
 ## 开发
@@ -212,18 +215,22 @@ REGIMES 流式测试会读取 `$env:NSIGHT_SKILL_REGIMES_SAMPLE`；未设置时�
 ```text
 .agents/plugins/marketplace.json
                          Codex plugin marketplace 元数据
-.claude-plugin/           Claude Code plugin 与 marketplace manifest
-.codex-plugin/            Codex plugin manifest
+.claude-plugin/marketplace.json
+                         Claude Code marketplace 元数据
+plugins/
+  nsight-graphics-analyzer/
+    .codex-plugin/        Codex plugin manifest
+    .claude-plugin/       Claude Code plugin manifest
+    skills/
+      nsight-graphics-analyzer/
+        SKILL.md          面向智能体的使用契约
+        agents/openai.yaml
+        scripts/
+          nsight.py       CLI 入口
+          nsight/         Python 包
 DESIGN.md                 维护者说明
 README.md                 项目文档
 tests/                    单元测试和小型 TSV fixture
-skills/
-  nsight-graphics-analyzer/
-    SKILL.md              面向智能体的使用契约
-    agents/openai.yaml    Codex skill UI 元数据
-    scripts/
-      nsight.py           CLI 入口
-      nsight/             Python 包
 ```
 
 提交 PR 前：

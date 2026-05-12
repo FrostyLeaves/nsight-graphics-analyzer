@@ -10,7 +10,13 @@ from pathlib import Path
 # skill's `scripts/` directory is on sys.path.
 _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parent
-_SKILL_DIR = _REPO_ROOT / "skills" / "nsight-graphics-analyzer"
+_SKILL_DIR = (
+    _REPO_ROOT
+    / "plugins"
+    / "nsight-graphics-analyzer"
+    / "skills"
+    / "nsight-graphics-analyzer"
+)
 _SCRIPTS_DIR = _SKILL_DIR / "scripts"
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
