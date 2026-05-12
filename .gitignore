@@ -3,6 +3,9 @@ captures/
 *.ngfx-gputrace
 *.ngfx-capture
 BASE/
+# But: keep small test fixtures under tests/data/BASE/ in version control.
+!tests/data/BASE/
+!tests/data/BASE/**
 
 # Python
 __pycache__/

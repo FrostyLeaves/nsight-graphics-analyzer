@@ -1,0 +1,39 @@
+Computer Name	TESTHOST
+Operating System	Windows 10 (22H2)
+Operating System Build	10.0.19045
+Processor	13th Gen Intel(R) Core(TM) i7-19000KF
+RAM Usage	43796 MiB / 65370 MiB (67.0%)
+Device Name	NVIDIA GeForce RTX 4090 Ti
+Chip Name	AD104
+Driver Version	581.57
+Hardware Scheduling	Disabled
+VRAM Requested	11 MiB / 11228 MiB (0.1%)
+VRAM Committed	15 MiB / 11228 MiB (0.1%)
+VRAM Bytes Demoted	0 MiB
+Product Version	2026.1.0.0 (build 37556978) (public-release)
+Process File Name	C:\TestApp.exe
+Command Line	"C:\TestApp.exe" 
+API	Vulkan
+Troubleshooting Collection Controls	API Timestamps, metrics, sampling oldest, instrumented, FECS, warp state sampling control=31
+Start After	Elapsed Time 3000 ms
+Max Duration 	2000 ms
+Limited To	Max Duration
+Allocated Event Buffer Memory (kB)	20000
+Allocated Timestamps	1000000
+V-Sync Mode	Enforced Off
+GPU Clocks	Locked to Base
+Force Repaint	No
+Force D3D12 Background Optimizations	No
+Max Vulkan SC Internal CBs per Queue	24
+Max Vulkan SC Internal CB Memory (kB)	16
+Collect Screenshot	Yes
+Time Every Action	Yes
+Trace Shader Bindings	Yes
+Collect Shader Pipelines	Yes
+Collect External Shader Debug Info	Yes
+Warp State Sampling Interval	N/A (Warp State Sampling Disabled)
+Enable NVTX Ranges	Yes
+Recompile Cached Vulkan Shader Modules	Yes
+Metric Set	Throughput Metrics
+Real-Time Shader Profiler	Disabled
+Multi-Pass Metrics	Disabled

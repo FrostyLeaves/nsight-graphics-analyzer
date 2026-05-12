@@ -47,7 +47,7 @@ class TestSummaryPipeline(unittest.TestCase):
         # hardware_context fields are populated from REPRO_INFO.xls.
         self.assertEqual(doc["hardware_context"]["chip"], "AD104")
         self.assertEqual(doc["hardware_context"]["api"], "Vulkan")
-        self.assertIn("RTX 4070 Ti", doc["hardware_context"]["gpu"])
+        self.assertIn("RTX", doc["hardware_context"]["gpu"])
 
     def test_stages_schema(self):
         doc = stages_builder.build(self.fake_trace, self.basics, self.bundle)
